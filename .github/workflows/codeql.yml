@@ -1,0 +1,70 @@
+# CodeQL Advanced Analysis Workflow
+#
+# This workflow runs CodeQL analysis on supported languages.
+# Customize the language matrix or queries as needed.
+# Docs: https://docs.github.com/en/code-security/code-scanning
+
+name: "CodeQL Advanced"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '39 13 * * 3'  # Runs weekly on Wednesdays at 13:39 UTC
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+
+    permissions:
+      security-events: write     # Required for all CodeQL uploads
+      packages: read             # Required if using private/internal CodeQL packs
+      actions: read              # Required for private repos
+      contents: read             # Required for private repos
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: javascript-typescript
+            build-mode: none
+          - language: python
+            build-mode: none
+          # Add more languages if needed
+          # - language: java-kotlin
+          #   build-mode: manual
+          # - language: c-cpp
+          #   build-mode: manual
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Setup steps (uncomment if needed for runtime setup)
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '18'
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          # queries: +security-extended,security-and-quality  # Optional custom queries
+
+      - if: matrix.build-mode == 'manual'
+        name: Manual Build Commands
+        shell: bash
+        run: |
+          echo "Manual build mode selected. Add your build commands here:"
+          echo "  e.g., make, mvn compile, npm build, etc."
+          exit 1  # Remove this once build commands are implemented
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
