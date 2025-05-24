@@ -1,3 +1,13 @@
+<!-- Multi-Language Navigation -->
+<p align="center">
+  <table>
+    <tr>
+      <td><a href="README.md">English</a></td>
+      <td><a href="README_cn.md">简体中文</a></td>
+    </tr>
+  </table>
+</p>
+
 # What is NLWeb
 
 Building conversational interfaces for websites is hard. NLWeb seeks to make it easy for websites to do this. And since NLWeb natively speaks MCP, the same natural language APIs can be used both by humans and agents.
